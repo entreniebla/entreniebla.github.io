@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>entreniebla</title>
+<link rel="shortcut icon" type="image/png" href="../data/favicon-32x32.png">
+<style>
+@font-face {
+  font-family: 'Intervogue';
+  src: url('data/intervogue-soft-medium 2.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Intervogue';
+  src: url('data/intervogue-soft-medium 2.otf') format('truetype');
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; overflow: hidden; }
+canvas { display: block; position: fixed; top: 0; left: 0; }
+
+#titulo {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  font-family: 'Intervogue', monospace;
+  font-size: 13px;
+  color: #000;
+  opacity: 1;
+  z-index: 10;
+  pointer-events: none;
+  letter-spacing: 0.05em;
+  background: #ede0d454;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(5px);
+  padding: 6px 10px;
+  border-radius: 2px;
+}
+
+#transicion {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Intervogue', monospace;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: #000000;
+  background: #ede0d4BB;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.3s ease;
+}
+#transicion.visible {
+  opacity: 1;
+}
+
+/* — ventana código — */
+#ventana {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  bottom: auto;
+  right: auto;
+  z-index: 10;
+  font-family: 'Intervogue', monospace;
+  font-size: 11px;
+  color: #757575;
+  background: #ede0d4BB;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mix-blend-mode: multiply;
+  border-radius: 2px;
+  max-width: 620px;
+  width: 620px;
+  transition: width 0.3s ease, max-width 0.3s ease;
+}
+
+#ventana-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  user-select: none;
+  color: #757575;
+}
+#ventana-header:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+#ventana-label {
+  font-size: 14px; /* ← */
+  letter-spacing: 0.05em;
+}
+
+#ventana-toggle {
+  font-size: 16px;
+  line-height: 1;
+  color: #757575;
+  padding-left: 12px;
+}
+
+#ventana-cuerpo {
+  overflow-y: auto;
+  max-height: 70vh;
+  padding: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+#ventana-cuerpo pre {
+  font-family: 'Intervogue', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #757575;
+  background: transparent;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 0;
+}
+
+#ventana.minimizado #ventana-cuerpo { display: none; }
+#ventana.minimizado { width: auto; max-width: none; }
+
+#ventana-cuerpo::-webkit-scrollbar       { width: 3px; }
+#ventana-cuerpo::-webkit-scrollbar-track { background: transparent; }
+#ventana-cuerpo::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+/* fondo oscuro — código */
+#ventana.fondo-oscuro                      { color: #ede0d4; }
+#ventana.fondo-oscuro #ventana-header      { color: #ede0d4; }
+#ventana.fondo-oscuro #ventana-toggle      { color: #ede0d4; }
+#ventana.fondo-oscuro #ventana-cuerpo pre  { color: #ede0d4; }
+
+/* — syntax color tlacuilo — rojo nunca cambia — */
+.kw   { color: #9a031e; font-weight: normal; }
+.cmnt { color: #9a031e; opacity: 0.55; }
+
+/* — ventana info — */
+#ventana-info {
+  position: fixed;
+  top: 52px; /* ← debajo del título */
+  left: 24px; /* ← mismo lado */
+  z-index: 10;
+  font-family: 'Intervogue', monospace;
+  font-size: 11px;
+  color: #757575;
+  background: #ede0d433;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 2px;
+  max-width: 380px;
+  width: 380px;
+  transition: width 0.3s ease, max-width 0.3s ease;
+}
+
+#ventana-info-header {
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  padding: 6px 10px;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  user-select: none;
+  font-size: 16px;
+  color: #000;
+}
+#ventana-info-header:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+#ventana-info-cuerpo {
+  overflow-y: auto;
+  max-height: 60vh;
+  padding: 12px 14px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#ventana-info-cuerpo p {
+  font-family: 'Intervogue', monospace;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #000000;
+  margin: 0;
+}
+
+#ventana-info.minimizado #ventana-info-cuerpo { display: none; }
+#ventana-info.minimizado { width: auto; max-width: none; }
+
+#ventana-info-cuerpo::-webkit-scrollbar       { width: 3px; }
+#ventana-info-cuerpo::-webkit-scrollbar-track { background: transparent; }
+#ventana-info-cuerpo::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+/* fondo oscuro — info */
+#ventana-info.fondo-oscuro                         { color: #ede0d4; }
+#ventana-info.fondo-oscuro #ventana-info-header    { color: #ede0d4; }
+#ventana-info.fondo-oscuro #ventana-info-cuerpo p  { color: #ede0d4; }
+</style>
+</head>
+<body>
+
+<div id="titulo">entreniebla — respirar (lluvia)</div>
+<div id="transicion"></div>
+
+<!-- ventana código -->
+<div id="ventana" class="minimizado">
+  <div id="ventana-header">
+    <span id="ventana-label">poesía–código</span>
+    <span id="ventana-toggle">+</span>
+  </div>
+  <div id="ventana-cuerpo">
+    <pre id="ventana-codigo"></pre>
+  </div>
+</div>
+
+<!-- ventana info -->
+<div id="ventana-info" class="minimizado">
+  <div id="ventana-info-header">
+    <span id="ventana-info-label">☰</span>
+    <span id="ventana-info-toggle" style="display:none"></span>
+  </div>
+  <div id="ventana-info-cuerpo">
+    <p>entreniebla es un libro de edición limitada publicado en 2014. Contiene exploraciones de poesía visual algorítmica y codeworks — capturas de accidentes que fueron procesos en movimiento — junto al código con el que cada pieza fue creada.</p>
+
+    <p>El libro traza rutas entre expresión poética y lenguajes de programación: algunas piezas usan la indentación, los comentarios y la sintaxis para generar sentido más allá de lo que el código ejecuta. Otras construyen y deconstruyen palabras mediante formas geométricas generadas algorítmicamente. ¿Cómo emerge significado poético en la interacción entre código y sistemas generativos? El sentido no está en las partes — emerge del gesto, el ritmo, la improvisación entre humano, máquina y lenguaje.</p>
+    
+    <p>En 2026 decidí sacar el libro del papel y dejarlo habitar la red. Cada pieza se ejecuta en el momento en que la miras — genera algo distinto cada vez, existe mientras hay un navegador abierto, y desaparece.</p>
+    
+    <p style="opacity:0.5; font-size: 12px;">↓ scrollea para navegar las piezas</p>
+    <p style="margin-top: 8px;">Rodrigo Ramírez Velasco – <a href="https://www.instagram.com/ocsalev__/" target="_blank" style="color: inherit; opacity: 0.6; text-decoration: none; letter-spacing: 0.05em;">@ocsalev__</a></p>
+    <p style="font-size: 13px; opacity: 0.6; line-height: 1.5;">Maestría en Artes Visuales, Facultad de Artes y Diseño<br>Universidad Nacional Autónoma de México</p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+<script src="sketch.js"></script>
+<script src="sketch1.js"></script>
+<script src="nav.js"></script>
+</body>
+</html>
