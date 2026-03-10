@@ -2,8 +2,9 @@
 // sistema de navegación entre piezas — entreniebla
 
 const piezas = [
-  { nombre: 'respirar (lluvia)',  sketch: sketchLluvia,  archivo: 'sketch.js'  },
-  { nombre: 'absurda y objetiva', sketch: sketchAbsurda, archivo: 'sketch1.js' },
+  { nombre: 'péptido',            sketch: sketchPeptido,  archivo: 'sketch.js' },
+  { nombre: 'absurda y objetiva', sketch: sketchAbsurda,  archivo: 'sketch1.js' },
+  { nombre: 'respirar (lluvia)',  sketch: sketchLluvia,   archivo: 'sketch2.js' },
 ];
 
 const titulos            = document.getElementById('titulo');
@@ -48,7 +49,7 @@ function hacerArrastrable(ventanaEl, headerEl) {
       seMueve  = true;
       yaMovida = true;
       const rect = ventanaEl.getBoundingClientRect();
-      ventanaEl.style.transform = ''; // ← limpia translate(-50%,-50%)
+      ventanaEl.style.transform = '';
       ventanaEl.style.right  = 'auto';
       ventanaEl.style.bottom = 'auto';
       ventanaEl.style.left   = rect.left + 'px';
@@ -90,7 +91,7 @@ function detectarFondo() {
   }, 600);
 }
 
-// — syntax color tlacuilo —
+// — syntax color —
 function pintarCodigo(txt) {
   txt = txt
     .replace(/&/g, '&amp;')
@@ -130,14 +131,12 @@ function cargarCodigo(archivo) {
 function abrirVentana() {
   ventana.classList.remove('minimizado');
   ventanaToggle.textContent = '—';
-
-  // siempre al centro — sin importar si fue movida antes
   ventana.style.top       = '50%';
   ventana.style.left      = '50%';
   ventana.style.transform = 'translate(-50%, -50%)';
   ventana.style.right     = 'auto';
   ventana.style.bottom    = 'auto';
-  dragVentana.setYaMovida(false); // ← resetea pa que el drag funcione limpio
+  dragVentana.setYaMovida(false);
 }
 
 function cerrarVentana() {
@@ -239,7 +238,7 @@ function animarTransicion(hacia) {
   animFrameId = requestAnimationFrame(paso);
 }
 
-// scroll — solo navega si el mouse NO está sobre la ventana
+// scroll
 window.addEventListener('wheel', (e) => {
   e.preventDefault();
   if (mouseEnVentana) return;
