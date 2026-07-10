@@ -8,7 +8,7 @@ In 2026 the book left paper behind to live on the web. Every piece runs live in 
 
 ## About this project
 
-A browser-based reinterpretation of a print artifact, rebuilding static poetry as generative, real-time code. Each piece is a self-contained sketch (JavaScript / Canvas) exploring procedural typography, algorithmic form generation, and code-as-poetic-material.
+A browser-based reinterpretation of a print artifact, rebuilding static poetry as generative, real-time code. Each piece is a self-contained sketch (JavaScript / p5.js) exploring procedural typography, algorithmic form generation, and code-as-poetic-material.
 
 ↓ scroll to navigate through the pieces
 
